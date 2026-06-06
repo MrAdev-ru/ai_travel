@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Phrasebook - AI Travel Assistant{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="fw-bold"><i class="bi bi-book me-2"></i>Travel Phrasebook</h1>
+    <p class="text-muted">Essential phrases for every travel situation</p>
+</div>
+
+<div class="row g-4">
+    {% for category in categories %}
+    <div class="col-sm-6 col-md-4 col-lg-4">
+        <a href="{% url 'phrasebook:category' category.slug %}" class="phrasebook-category-card text-decoration-none">
+            <div class="card shadow-sm border-0 h-100 category-hover">
+                <div class="card-body text-center p-4">
+                    <div class="category-icon-lg mb-3">
+                        <i class="bi {{ category.icon }}"></i>
+                    </div>
+                    <h5 class="fw-bold">{{ category.name }}</h5>
+                    <p class="text-muted small mb-0">{{ category.description }}</p>
+                    <span class="badge bg-primary mt-3">{{ category.phrases.count }} phrases</span>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <p class="text-muted">No phrasebook categories loaded. Run the sample data command.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} - Phrasebook{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'phrasebook:home' %}">Phrasebook</a></li>
+            <li class="breadcrumb-item active">{{ category.name }}</li>
+        </ol>
+    </nav>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="fw-bold"><i class="bi {{ category.icon }} me-2"></i>{{ category.name }}</h1>
+            <p class="text-muted mb-0">{{ category.description }}</p>
+        </div>
+        <!-- Language selector -->
+        <form method="get" class="d-flex align-items-center gap-2">
+            <label class="form-label mb-0 fw-semibold">Translate to:</label>
+            <select name="lang" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                {% for code, name in languages %}
+                <option value="{{ code }}" {% if code == target_lang %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="list-group list-group-flush">
+        {% for item in phrase_list %}
+        <div class="list-group-item phrase-item py-3">
+            <div class="row align-items-center">
+                <div class="col-md-5">
+                    <p class="fw-semibold mb-0">{{ item.phrase.source_text }}</p>
+                    {% if item.phrase.pronunciation %}
+                    <small class="text-muted"><i class="bi bi-mic me-1"></i>{{ item.phrase.pronunciation }}</small>
+                    {% endif %}
+                </div>
+                <div class="col-md-1 text-center d-none d-md-block">
+                    <i class="bi bi-arrow-right text-muted"></i>
+                </div>
+                <div class="col-md-5">
+                    <p class="mb-0 text-primary fw-medium">{{ item.translated_text }}</p>
+                </div>
+                <div class="col-md-1 text-end">
+                    <button class="btn btn-sm btn-outline-secondary tts-btn" data-text="{{ item.translated_text }}" title="Listen">
+                        <i class="bi bi-volume-up"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="list-group-item text-center py-5 text-muted">
+            No phrases in this category yet.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<a href="{% url 'phrasebook:home' %}" class="btn btn-outline-primary mt-4">
+    <i class="bi bi-arrow-left me-1"></i>Back to Categories
+</a>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.tts-btn[data-text]').forEach(btn => {
+    btn.addEventListener('click', () => speakText(btn.dataset.text));
+});
+</script>
+{% endblock %}

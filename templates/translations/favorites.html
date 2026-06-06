@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Favorites - AI Travel Assistant{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="fw-bold"><i class="bi bi-star-fill me-2 text-warning"></i>Favorite Translations</h1>
+    <p class="text-muted">Your saved translations for quick reference</p>
+</div>
+
+{% if favorites %}
+<div class="row g-4">
+    {% for fav in favorites %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card favorite-card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-secondary">{{ fav.source_language|upper }}</span>
+                    <i class="bi bi-arrow-right text-muted"></i>
+                    <span class="badge bg-primary">{{ fav.target_language|upper }}</span>
+                </div>
+                <p class="fw-semibold mb-1">{{ fav.source_text }}</p>
+                <p class="text-muted mb-3">{{ fav.translated_text }}</p>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-secondary tts-btn" data-text="{{ fav.translated_text }}">
+                        <i class="bi bi-volume-up"></i> Listen
+                    </button>
+                    <form method="post" action="{% url 'translations:remove_favorite' fav.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i> Remove
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <small class="text-muted">Saved {{ fav.created_at|timesince }} ago</small>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-star display-1 text-muted"></i>
+    <h4 class="mt-3">No favorites yet</h4>
+    <p class="text-muted">Star translations to save them here.</p>
+    <a href="{% url 'translations:translate' %}" class="btn btn-primary">Start Translating</a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.tts-btn[data-text]').forEach(btn => {
+    btn.addEventListener('click', () => speakText(btn.dataset.text));
+});
+</script>
+{% endblock %}
