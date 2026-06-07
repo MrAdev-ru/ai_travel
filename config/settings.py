@@ -108,14 +108,6 @@ LOGOUT_REDIRECT_URL = 'accounts:login'
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
-# Google Cloud Translation API credentials path
-GOOGLE_APPLICATION_CREDENTIALS = config(
-    'GOOGLE_APPLICATION_CREDENTIALS',
-    default='',
-)
-if GOOGLE_APPLICATION_CREDENTIALS:
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GOOGLE_APPLICATION_CREDENTIALS
-
 # Supported languages for the translation interface (100+ languages)
 SUPPORTED_LANGUAGES = [
     ('af', 'Afrikaans'), ('sq', 'Albanian'), ('am', 'Amharic'), ('ar', 'Arabic'),

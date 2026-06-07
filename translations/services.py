@@ -1,6 +1,6 @@
 """
-Google Cloud Translation API service wrapper.
-Handles translation, language detection, and fallback behavior.
+Deep Translator service wrapper.
+Handles translation and fallback behavior using deep-translator.
 """
 import logging
 
@@ -10,75 +10,48 @@ logger = logging.getLogger(__name__)
 
 
 class TranslationService:
-    """Service class for Google Cloud Translation API operations."""
-
-    def __init__(self):
-        self._client = None
-
-    @property
-    def client(self):
-        """Lazy-load the Google Translate client."""
-        if self._client is None:
-            try:
-                from google.cloud import translate_v2 as translate
-                self._client = translate.Client()
-            except Exception as e:
-                logger.warning('Google Translate client unavailable: %s', e)
-                self._client = False
-        return self._client if self._client else None
+    """Service class for translation operations using deep-translator."""
 
     def is_available(self):
-        """Check if the translation API is configured and reachable."""
-        return self.client is not None
+        """Check if the deep-translator package is importable."""
+        try:
+            from deep_translator import GoogleTranslator  # noqa: F401
+            return True
+        except Exception as e:
+            logger.warning('Deep Translator unavailable: %s', e)
+            return False
 
     def detect_language(self, text):
-        """
-        Detect the language of the given text.
-        Returns dict with 'language' code and 'confidence' score.
-        """
-        if not self.client:
-            return self._mock_detect(text)
-
-        try:
-            result = self.client.detect_language(text)
-            return {
-                'language': result.get('language', 'en'),
-                'confidence': result.get('confidence', 0.0),
-            }
-        except Exception as e:
-            logger.error('Language detection failed: %s', e)
-            return self._mock_detect(text)
+        """Detect the language of the given text using script heuristics."""
+        return self._detect_language(text)
 
     def translate(self, text, target_language, source_language=None):
         """
         Translate text to the target language.
         Optionally specify source language; otherwise auto-detect.
         """
-        if not self.client:
-            return self._mock_translate(text, target_language, source_language)
-
         try:
-            if source_language and source_language != 'auto':
-                result = self.client.translate(
-                    text,
-                    target_language=target_language,
-                    source_language=source_language,
-                )
-            else:
-                result = self.client.translate(text, target_language=target_language)
+            from deep_translator import GoogleTranslator
+
+            translator_source = (
+                source_language if source_language and source_language != 'auto' else 'auto'
+            )
+            translated_text = GoogleTranslator(
+                source=translator_source,
+                target=target_language,
+            ).translate(text)
 
             return {
-                'translated_text': result.get('translatedText', text),
-                'detected_source_language': result.get('detectedSourceLanguage', source_language or 'en'),
-                'source_language': source_language or result.get('detectedSourceLanguage', 'en'),
+                'translated_text': translated_text,
+                'detected_source_language': translator_source,
+                'source_language': translator_source,
             }
         except Exception as e:
             logger.error('Translation failed: %s', e)
             return self._mock_translate(text, target_language, source_language)
 
-    def _mock_detect(self, text):
-        """Fallback detection when API is unavailable (development/demo)."""
-        # Simple heuristic: check for common non-Latin scripts
+    def _detect_language(self, text):
+        """Fallback detection using simple script heuristics."""
         if any('\u0600' <= c <= '\u06FF' for c in text):
             return {'language': 'ar', 'confidence': 0.8}
         if any('\u4e00' <= c <= '\u9fff' for c in text):

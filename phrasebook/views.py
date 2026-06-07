@@ -23,7 +23,7 @@ def category_detail(request, slug):
     phrase_list = []
     for phrase in phrases:
         translated = phrase.get_translation(target_lang)
-        # If no stored translation, try Google API
+        # If no stored translation, try the translation service
         if translated == phrase.source_text and target_lang != 'en':
             if translation_service.is_available():
                 result = translation_service.translate(

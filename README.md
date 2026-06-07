@@ -1,6 +1,6 @@
 # AI Travel Assistant
 
-A full-featured Django web application for travel translation, built as a university final project. Translate text between 100+ languages using Google Cloud Translation API, browse a travel phrasebook, save favorites, and track your translation history.
+A full-featured Django web application for travel translation, built as a university final project. Translate text between 100+ languages using deep-translator's GoogleTranslator, browse a travel phrasebook, save favorites, and track your translation history.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![Django](https://img.shields.io/badge/Django-4.2-green)
@@ -10,7 +10,7 @@ A full-featured Django web application for travel translation, built as a univer
 ## Features
 
 - **User Authentication** — Registration, login, logout, and profile
-- **Translation** — Translate between 100+ languages via Google Cloud Translation API
+- **Translation** — Translate between 100+ languages via deep-translator GoogleTranslator
 - **Language Detection** — Automatic source language detection
 - **Translation History** — All translations stored in PostgreSQL
 - **Favorites** — Save and manage favorite translations
@@ -27,7 +27,7 @@ A full-featured Django web application for travel translation, built as a univer
 | Backend     | Python 3.10+, Django 4.2      |
 | Database    | PostgreSQL 14+                |
 | Frontend    | HTML5, CSS3, Bootstrap 5, JS  |
-| Translation | Google Cloud Translation API  |
+| Translation | deep-translator GoogleTranslator |
 | TTS         | Web Speech API                |
 
 ## Project Structure
@@ -58,7 +58,7 @@ travel_ai/
 
 - Python 3.10 or higher
 - PostgreSQL 14 or higher
-- Google Cloud account with Translation API enabled (optional for demo mode)
+- No Google Cloud account or API keys are required
 
 ### 1. Clone and set up virtual environment
 
@@ -106,20 +106,11 @@ DB_USER=postgres
 DB_PASSWORD=your_password
 DB_HOST=localhost
 DB_PORT=5432
-
-GOOGLE_APPLICATION_CREDENTIALS=path/to/service-account-key.json
 ```
 
-### 4. Google Cloud Translation API (optional)
+> **Note:** This version uses `deep-translator` and does not require Google Cloud credentials or API keys.
 
-1. Create a project in [Google Cloud Console](https://console.cloud.google.com/)
-2. Enable the **Cloud Translation API**
-3. Create a service account and download the JSON key
-4. Set `GOOGLE_APPLICATION_CREDENTIALS` in `.env` to the key file path
-
-> **Note:** Without API credentials, the app runs in **demo mode** with mock translations prefixed by the target language name.
-
-### 5. Run migrations and load sample data
+### 4. Run migrations and load sample data
 
 ```bash
 python manage.py migrate
@@ -127,7 +118,7 @@ python manage.py load_phrasebook
 python manage.py createsuperuser
 ```
 
-### 6. Start the development server
+### 5. Start the development server
 
 ```bash
 python manage.py runserver

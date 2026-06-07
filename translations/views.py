@@ -26,7 +26,6 @@ def translate_view(request):
             target_lang = form.cleaned_data['target_language']
 
             if source_text:
-                # Perform translation via Google Cloud API
                 translation = translation_service.translate(
                     source_text,
                     target_lang,
@@ -56,7 +55,7 @@ def translate_view(request):
                 if not api_available:
                     messages.warning(
                         request,
-                        'Google Translate API is not configured. Showing demo output.',
+                        'Translation service is not configured. Showing demo output.',
                     )
 
     context = {
